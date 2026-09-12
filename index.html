@@ -1,487 +1,58 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SangLee Panel - Crown Edition</title>
-    <!-- Nhúng Font Montserrat chuẩn chỉnh như trong ảnh -->
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <!-- Nhúng Icon FontAwesome cho phần Menu -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Montserrat', sans-serif;
-            user-select: none;
-        }
-
-        body {
-            background: radial-gradient(circle at center, #2e3440 0%, #11141a 100%);
-            overflow: hidden;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: #fff;
-        }
-
-        /* Nền tuyết rơi động */
-        canvas {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 1;
-            pointer-events: none;
-        }
-
-        /* Khung Panel Bo Tròn Chuẩn Ảnh */
-        .panel-container {
-            position: relative;
-            z-index: 2;
-            width: 380px;
-            padding: 40px 30px;
-            background: rgba(20, 26, 38, 0.88);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(0, 188, 212, 0.15);
-            border-radius: 32px;
-            box-shadow: 0 30px 70px rgba(0, 0, 0, 0.6);
-            text-align: center;
-        }
-
-        /* Phần Vương Miện Có Hào Quang Vàng */
-        .crown-box {
-            font-size: 46px;
-            margin-bottom: 20px;
-            display: inline-block;
-            position: relative;
-            filter: drop-shadow(0 0 20px rgba(255, 200, 0, 0.9));
-            animation: crownPulse 2.5s ease-in-out infinite alternate;
-        }
-
-        @keyframes crownPulse {
-            from { transform: scale(1); filter: drop-shadow(0 0 15px rgba(255, 200, 0, 0.7)); }
-            to { transform: scale(1.05); filter: drop-shadow(0 0 25px rgba(255, 215, 0, 1)); }
-        }
-
-        /* Text nhỏ phía trên tiêu đề */
-        .header-tag {
-            font-size: 11px;
-            font-weight: 500;
-            color: #69778c;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            margin-bottom: 8px;
-        }
-
-        /* Chữ NHẬP KEY Glow Neon Cyan cực mạnh */
-        .glow-title {
-            font-size: 28px;
-            font-weight: 800;
-            color: #00e5ff;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            text-shadow: 0 0 15px rgba(0, 229, 255, 0.8), 0 0 30px rgba(0, 229, 255, 0.3);
-            margin-bottom: 35px;
-        }
-
-        /* Ô nhập mã xác thực tối giản */
-        .input-style {
-            width: 100%;
-            padding: 18px;
-            background: #0a0e17;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 16px;
-            color: #fff;
-            font-size: 13px;
-            text-align: center;
-            outline: none;
-            margin-bottom: 18px;
-            transition: 0.3s;
-        }
-
-        .input-style::placeholder {
-            color: #3b4656;
-        }
-
-        .input-style:focus {
-            border-color: rgba(0, 229, 255, 0.3);
-            box-shadow: 0 0 15px rgba(0, 229, 255, 0.1);
-        }
-
-        /* Nút Xác Nhận Viền Cyan */
-        .btn-outline-cyan {
-            width: 100%;
-            padding: 18px;
-            background: transparent;
-            border: 2px solid #00bfff;
-            border-radius: 16px;
-            color: #00bfff;
-            font-size: 13px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-
-        .btn-outline-cyan:hover {
-            background: rgba(0, 191, 255, 0.08);
-            box-shadow: 0 0 25px rgba(0, 191, 255, 0.4);
-        }
-
-        /* Dòng chữ quay lại chân trang */
-        .foot-text {
-            display: inline-block;
-            margin-top: 25px;
-            font-size: 11px;
-            color: #3b4656;
-            text-decoration: none;
-            transition: 0.3s;
-        }
-        .foot-text:hover { color: #5a6b82; }
-
-        /* GIAO DIỆN XÁC THỰC (LOAD % THEO ẢNH 1) */
-        .loading-title {
-            font-size: 20px;
-            font-weight: 700;
-            color: #fff;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            text-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
-            margin-bottom: 30px;
-        }
-
-        .bar-track {
-            width: 100%;
-            height: 8px;
-            background: rgba(255, 255, 255, 0.04);
-            border-radius: 10px;
-            overflow: hidden;
-            margin-bottom: 18px;
-        }
-
-        .bar-run {
-            width: 0%;
-            height: 100%;
-            background: linear-gradient(90deg, #00f2fe 0%, #4facfe 100%);
-            box-shadow: 0 0 15px #00e5ff;
-        }
-
-        .bar-percent {
-            font-size: 26px;
-            font-weight: 700;
-            color: #00e5ff;
-            text-shadow: 0 0 12px rgba(0, 229, 255, 0.6);
-        }
-
-        /* Giao diện lỗi chữ X to đùng */
-        .big-x {
-            font-size: 75px;
-            color: #ff3355;
-            text-shadow: 0 0 30px rgba(255, 51, 85, 0.7);
-            margin-bottom: 15px;
-            animation: shake 0.4s ease;
-        }
-        .error-msg {
-            color: #ff3355;
-            font-weight: 700;
-            font-size: 14px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        /* GIAO DIỆN MENU CHỨC NĂNG (ĐỒNG BỘ THEME CHUẨN) */
-        .menu-scroll {
-            max-height: 380px;
-            overflow-y: auto;
-            padding-right: 5px;
-            text-align: left;
-        }
-        .menu-scroll::-webkit-scrollbar { width: 4px; }
-        .menu-scroll::-webkit-scrollbar-thumb { background: rgba(0, 229, 255, 0.2); border-radius: 10px; }
-
-        .cate-title {
-            font-size: 11px;
-            font-weight: 700;
-            color: #00e5ff;
-            letter-spacing: 2px;
-            margin: 20px 0 8px 2px;
-            text-transform: uppercase;
-            opacity: 0.9;
-            text-shadow: 0 0 5px rgba(0, 229, 255, 0.3);
-        }
-
-        .cheat-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: #0a0e17;
-            padding: 13px 16px;
-            margin-bottom: 6px;
-            border-radius: 14px;
-            border: 1px solid rgba(255, 255, 255, 0.01);
-        }
-
-        .cheat-left {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        .cheat-left i {
-            font-size: 14px;
-            color: #00e5ff;
-            width: 20px;
-            text-align: center;
-            filter: drop-shadow(0 0 5px rgba(0, 229, 255, 0.6));
-        }
-        .cheat-left span {
-            font-size: 13px;
-            font-weight: 600;
-            color: #e5e7eb;
-        }
-        .risk-text {
-            font-size: 10px;
-            color: #ff3355;
-            display: block;
-            margin-top: 2px;
-            font-weight: 500;
-        }
-
-        /* Nút gạt Switch tròn trịa */
-        .switch { position: relative; display: inline-block; width: 38px; height: 18px; }
-        .switch input { opacity: 0; width: 0; height: 0; }
-        .slider {
-            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
-            background-color: rgba(255, 255, 255, 0.08); transition: .3s; border-radius: 20px;
-        }
-        .slider:before {
-            position: absolute; content: ""; height: 12px; width: 12px; left: 3px; bottom: 3px;
-            background-color: white; transition: .3s; border-radius: 50%;
-        }
-        input:checked + .slider { background-color: #00e5ff; box-shadow: 0 0 8px rgba(0, 229, 255, 0.5); }
-        input:checked + .slider:before { transform: translateX(20px); }
-        input:checked + .slider-danger { background-color: #ff3355; box-shadow: 0 0 8px rgba(255, 51, 85, 0.5); }
-
-        .hidden { display: none !important; }
-
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-6px); }
-            75% { transform: translateX(6px); }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>FF Scheme Test</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+body{background:#020008;color:#fff;font-family:monospace;padding:20px;min-height:100vh;}
+h2{color:#ff1133;font-size:14px;letter-spacing:3px;margin-bottom:20px;text-align:center;}
+.btn{display:block;width:100%;padding:14px;margin-bottom:10px;background:rgba(255,17,51,.1);border:1px solid rgba(255,17,51,.3);border-radius:12px;color:#fff;font-family:monospace;font-size:11px;letter-spacing:.5px;cursor:pointer;text-align:left;-webkit-user-select:none;}
+.btn:active{background:rgba(255,17,51,.3);}
+.scheme{color:#ff3355;font-size:10px;display:block;margin-top:4px;word-break:break-all;}
+#log{margin-top:20px;background:rgba(0,0,0,.8);border:1px solid rgba(255,17,51,.2);border-radius:10px;padding:12px;font-size:10px;color:#00ffaa;min-height:60px;}
+</style>
 </head>
 <body>
+<h2>FF SCHEME TESTER</h2>
+<p style="font-size:10px;color:#6a3545;text-align:center;margin-bottom:16px;">Bấm từng nút — cái nào mở FF thì báo tôi số mấy</p>
 
-    <!-- Canvas Tuyết Động -->
-    <canvas id="snowCanvas"></canvas>
+<div id="btns"></div>
+<div id="log">// log xuất hiện ở đây</div>
 
-    <!-- Khung Panel Chính -->
-    <div class="panel-container">
-        
-        <!-- MÀN HÌNH ĐĂNG NHẬP (Y HỆT ẢNH MẪU 100%) -->
-        <div id="view-login">
-            <div class="crown-box">👑</div>
-            <div class="header-tag">Xác thực hệ thống</div>
-            <div class="glow-title">Nhập Key</div>
-            
-            <input type="text" class="input-style" id="keyInputField" placeholder="Nhập mã xác thực tại đây..." autocomplete="off">
-            <button class="btn-outline-cyan" onclick="validateSystemKey()">Xác nhận bàn kiểm duyệt</button>
-            
-            <a href="#" class="foot-text">← Quay lại danh mục sảnh chờ</a>
-        </div>
+<script>
+const schemes = [
+  'freefire://',
+  'freefireth://',
+  'com.dts.freefireth://',
+  'garena://freefire',
+  'garena://game?id=100067',
+  'garena://open?gameid=100067',
+  'garenaff://',
+  'ff://',
+  'garenaworld://freefire',
+  'garena://startgame?id=100067',
+];
 
-        <!-- MÀN HÌNH ĐANG XÁC THỰC -->
-        <div id="view-loading" class="hidden">
-            <div class="loading-title">Đang xác thực</div>
-            <div class="bar-track">
-                <div class="bar-run" id="progressRun"></div>
-            </div>
-            <div class="bar-percent" id="progressPercent">0%</div>
-        </div>
+const box = document.getElementById('btns');
+const log = document.getElementById('log');
 
-        <!-- MÀN HÌNH LỖI SAI KEY CHỮ X TO -->
-        <div id="view-error" class="hidden">
-            <div class="big-x">❌</div>
-            <div class="error-msg">Key Nhập Không Đúng</div>
-            <a href="#" class="foot-text" onclick="goBackToLogin()" style="color:#ff3355; margin-top:20px;">Thử lại phiên đăng nhập</a>
-        </div>
-
-        <!-- MÀN HÌNH MENU CHỨC NĂNG CHÍNH -->
-        <div id="view-menu" class="hidden">
-            <div class="header-tag" style="margin-bottom: 2px;">SangLee Panel</div>
-            <div class="glow-title" style="font-size: 20px; margin-bottom: 20px;">Dashboard</div>
-            
-            <div class="menu-scroll">
-                <!-- PHẦN CHỨC NĂNG AIM CÓ ICON -->
-                <div class="cate-title">🎯 Hệ Thống Ngắm bắn</div>
-                <div class="cheat-row">
-                    <div class="cheat-left"><i class="fa-solid fa-crosshairs"></i><span>Aimlock</span></div>
-                    <label class="switch"><input type="checkbox"><span class="slider"></span></label>
-                </div>
-                <div class="cheat-row">
-                    <div class="cheat-left"><i class="fa-solid fa-bullseye"></i><span>AimNeck</span></div>
-                    <label class="switch"><input type="checkbox"><span class="slider"></span></label>
-                </div>
-                <div class="cheat-row">
-                    <div class="cheat-left"><i class="fa-solid fa-street-view"></i><span>AimChest</span></div>
-                    <label class="switch"><input type="checkbox"><span class="slider"></span></label>
-                </div>
-                <div class="cheat-row">
-                    <div class="cheat-left"><i class="fa-solid fa-arrow-up-from-bracket"></i><span>Aimdrag</span></div>
-                    <label class="switch"><input type="checkbox"><span class="slider"></span></label>
-                </div>
-                <div class="cheat-row">
-                    <div class="cheat-left"><i class="fa-solid fa-mask"></i><span>AimSilent</span></div>
-                    <label class="switch"><input type="checkbox"><span class="slider"></span></label>
-                </div>
-                <div class="cheat-row">
-                    <div class="cheat-left"><i class="fa-solid fa-robot"></i><span>Aimbot</span></div>
-                    <label class="switch"><input type="checkbox"><span class="slider"></span></label>
-                </div>
-
-                <!-- PHẦN ĐỊNH VỊ -->
-                <div class="cate-title">👁️ Khả Năng Quan Sát</div>
-                <div class="cheat-row">
-                    <div class="cheat-left"><i class="fa-solid fa-eye"></i><span>Esp</span></div>
-                    <label class="switch"><input type="checkbox"><span class="slider"></span></label>
-                </div>
-
-                <!-- PHẦN VẬT LÝ GAME -->
-                <div class="cate-title">⚡ Vật Lý & Cơ Động</div>
-                <div class="cheat-row">
-                    <div class="cheat-left"><i class="fa-solid fa-wand-magic-sparkles"></i><span>No Recoil</span></div>
-                    <label class="switch"><input type="checkbox"><span class="slider"></span></label>
-                </div>
-                <div class="cheat-row">
-                    <div class="cheat-left"><i class="fa-solid fa-notes-medical"></i><span>Hồi Máu Nhanh</span></div>
-                    <label class="switch"><input type="checkbox"><span class="slider"></span></label>
-                </div>
-                <div class="cheat-row">
-                    <div class="cheat-left"><i class="fa-solid fa-bolt"></i><span>Hồi Đạn Nhanh</span></div>
-                    <label class="switch"><input type="checkbox"><span class="slider"></span></label>
-                </div>
-                <div class="cheat-row">
-                    <div class="cheat-left"><i class="fa-solid fa-person-running"></i><span>Chạy Nhanh</span></div>
-                    <label class="switch"><input type="checkbox"><span class="slider"></span></label>
-                </div>
-
-                <!-- PHẦN NGUY HIỂM -->
-                <div class="cate-title" style="color: #ff3355;">⚠️ Vùng Nguy Hiểm</div>
-                <div class="cheat-row" style="border-color: rgba(255, 51, 85, 0.15);">
-                    <div class="cheat-left">
-                        <i class="fa-solid fa-gauge-high" style="color: #ff3355; filter: drop-shadow(0 0 5px #ff3355);"></i>
-                        <div>
-                            <span>Speed X10</span>
-                            <span class="risk-text">Dễ bị hệ thống phát hiện Ban</span>
-                        </div>
-                    </div>
-                    <label class="switch">
-                        <input type="checkbox">
-                        <span class="slider slider-danger"></span>
-                    </label>
-                </div>
-            </div>
-        </div>
-
-    </div>
-
-    <script>
-        // --- HIỆU ỨNG TUYẾT RƠI NỀN ĐỘNG ---
-        const canvas = document.getElementById('snowCanvas');
-        const ctx = canvas.getContext('2d');
-        let snowFlakes = [];
-
-        function setCanvasSize() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        }
-        window.addEventListener('resize', setCanvasSize);
-        setCanvasSize();
-
-        class SnowFlake {
-            constructor() {
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * canvas.height;
-                this.size = Math.random() * 2 + 1;
-                this.opacity = Math.random() * 0.6 + 0.3;
-                this.speed = Math.random() * 0.7 + 0.2;
-            }
-            fall() {
-                this.y += this.speed;
-                this.x += Math.sin(this.y / 25) * 0.2;
-                if (this.y > canvas.height) {
-                    this.y = -10;
-                    this.x = Math.random() * canvas.width;
-                }
-            }
-            draw() {
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fillStyle = `rgba(255, 255, 255, ${this.opacity})`;
-                ctx.fill();
-            }
-        }
-
-        for(let i=0; i<85; i++) snowFlakes.push(new SnowFlake());
-
-        function loopSnow() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            snowFlakes.forEach(s => { s.fall(); s.draw(); });
-            requestAnimationFrame(loopSnow);
-        }
-        loopSnow();
-
-
-        // --- LOGIC KIỂM TRA MÃ KEY HỆ THỐNG ---
-        const SYSTEM_KEY = "LDS_KEYFREEFIREVV";
-
-        function validateSystemKey() {
-            const enteredKey = document.getElementById('keyInputField').value.trim();
-            const loginView = document.getElementById('view-login');
-            const loadingView = document.getElementById('view-loading');
-            const errorView = document.getElementById('view-error');
-
-            if (enteredKey === SYSTEM_KEY) {
-                // 1. Vào trạng thái ĐANG XÁC THỰC
-                loginView.classList.add('hidden');
-                loadingView.classList.remove('hidden');
-
-                let progress = 0;
-                const fillBar = document.getElementById('progressRun');
-                const percentText = document.getElementById('progressPercent');
-
-                // Chạy vòng lặp từ 1% - 100% trong đúng 3 giây (3000ms / 100 bước = 30ms)
-                const runTimer = setInterval(() => {
-                    progress++;
-                    fillBar.style.width = progress + '%';
-                    percentText.innerText = progress + '%';
-
-                    if (progress >= 100) {
-                        clearInterval(runTimer);
-                        // Mở khóa Menu chính
-                        setTimeout(() => {
-                            loadingView.classList.add('hidden');
-                            document.getElementById('view-menu').classList.remove('hidden');
-                        }, 250);
-                    }
-                }, 28);
-            } else {
-                // 2. Chuyển sang màn hình báo sai Key có chữ X to màu đỏ
-                loginView.classList.add('hidden');
-                errorView.classList.remove('hidden');
-            }
-        }
-
-        function goBackToLogin() {
-            document.getElementById('view-error').classList.add('hidden');
-            document.getElementById('view-login').classList.remove('hidden');
-            document.getElementById('keyInputField').value = "";
-        }
-    </script>
+schemes.forEach((s, i) => {
+  const b = document.createElement('button');
+  b.className = 'btn';
+  b.innerHTML = `<b>#${i+1}</b><span class="scheme">${s}</span>`;
+  b.onclick = () => {
+    log.textContent = `[${i+1}] Trying: ${s}`;
+    const a = document.createElement('a');
+    a.href = s;
+    a.style.cssText = 'display:none;position:fixed;top:0;left:0;';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => { try{document.body.removeChild(a);}catch(e){} }, 200);
+  };
+  box.appendChild(b);
+});
+</script>
 </body>
 </html>
-
